@@ -10,11 +10,8 @@ exports.getallproducts = (req, res) => {
 
   const paginatedProducts = products.slice(startIndex, endIndex);
 
-  res.status(200).json({
-    paginatedProducts,
-  });
+  res.status(200).json(paginatedProducts);
 };
-
 
 exports.getWishlist = async (req, res) => {
   try {
