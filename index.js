@@ -34,6 +34,7 @@ app.post("/signup", authController.signup);
 app.post("/login", authController.login);
 
 app.get("/getallproducts", productController.getallproducts);
+app.get("/product/:id", productController.getproduct);
 
 app.get("/wishlist",authMiddleware, productController.getWishlist);
 app.post("/wishlist/add",authMiddleware ,productController.addToWishlist);

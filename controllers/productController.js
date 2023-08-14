@@ -2,8 +2,8 @@ const products = require("../db.json");
 const User = require("../models/User");
 
 exports.getallproducts = (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Get the requested page from the query, default to 1
-  const limit = parseInt(req.query.limit) || 9; // Get the requested limit from the query, default to 9
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 9;
 
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
@@ -11,6 +11,18 @@ exports.getallproducts = (req, res) => {
   const paginatedProducts = products.slice(startIndex, endIndex);
 
   res.status(200).json(paginatedProducts);
+};
+
+exports.getproduct = (req, res) => {
+  const productId = parseInt(req.params.id);
+
+  const product = products.find((product) => product.id === productId);
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  res.status(200).json(product);
 };
 
 exports.getWishlist = async (req, res) => {
