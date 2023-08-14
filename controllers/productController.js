@@ -2,8 +2,21 @@ const products = require("../db.json");
 const User = require("../models/User");
 
 exports.getallproducts = (req, res) => {
-  res.status(200).json(products);
+  const page = parseInt(req.query.page) || 1; // Get the requested page from the query, default to 1
+  const limit = parseInt(req.query.limit) || 9; // Get the requested limit from the query, default to 9
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const paginatedProducts = products.slice(startIndex, endIndex);
+
+  res.status(200).json({
+    currentPage: page,
+    totalPages: Math.ceil(products.length / limit),
+    products: paginatedProducts,
+  });
 };
+
 
 exports.getWishlist = async (req, res) => {
   try {
