@@ -11,9 +11,7 @@ exports.getallproducts = (req, res) => {
   const paginatedProducts = products.slice(startIndex, endIndex);
 
   res.status(200).json({
-    currentPage: page,
-    totalPages: Math.ceil(products.length / limit),
-    products: paginatedProducts,
+    paginatedProducts,
   });
 };
 
