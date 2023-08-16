@@ -8,37 +8,40 @@ exports.getallproducts = (req, res) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
-  // Apply sorting, filtering, and pagination
+
   let filteredProducts = [...products];
 
-  // Apply sorting
-  if (req.query.sorting) {
-    const sortingField = req.query.sorting;
-    const sortOrder = req.query.order === 'asc' ? 1 : -1;
+
+  if (req.query._sort && req.query._order) {
+    const sortingField = req.query._sort;
+    const sortOrder = req.query._order === 'asc' ? 1 : -1;
     filteredProducts.sort((a, b) => (a[sortingField] - b[sortingField]) * sortOrder);
   }
 
-  // Apply category filtering
-  if (req.query.categoryQuery) {
-    const category = req.query.categoryQuery;
+
+  if (req.query.category) {
+    const category = req.query.category;
     filteredProducts = filteredProducts.filter(product => product.category === category);
   }
 
-  // Apply price filtering
-  if (req.query.priceQuery) {
-    const [minPrice, maxPrice] = req.query.priceQuery.split('-').map(Number);
+
+  if (req.query.price_gte && req.query.price_lte) {
+    const minPrice = parseInt(req.query.price_gte);
+    const maxPrice = parseInt(req.query.price_lte);
     filteredProducts = filteredProducts.filter(product => product.price >= minPrice && product.price <= maxPrice);
   }
 
-  // Apply color filtering
-  if (req.query.colorQuery) {
-    const color = req.query.colorQuery;
+
+  if (req.query.color_like) {
+    const color = req.query.color_like;
     filteredProducts = filteredProducts.filter(product => product.color.includes(color));
   }
 
-  // Apply discount filtering
-  if (req.query.discountQuery) {
-    filteredProducts = filteredProducts.filter(product => product.discount > 0);
+
+  if (req.query.id_gte && req.query.id_lte) {
+    const minId = parseInt(req.query.id_gte);
+    const maxId = parseInt(req.query.id_lte);
+    filteredProducts = filteredProducts.filter(product => product.id >= minId && product.id <= maxId);
   }
 
   const totalCount = filteredProducts.length;
@@ -49,6 +52,7 @@ exports.getallproducts = (req, res) => {
 
   res.status(200).json(paginatedProducts);
 };
+
 
 
 exports.getproduct = (req, res) => {
