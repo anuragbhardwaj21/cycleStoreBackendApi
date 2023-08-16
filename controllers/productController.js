@@ -8,10 +8,48 @@ exports.getallproducts = (req, res) => {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
-  const paginatedProducts = products.slice(startIndex, endIndex);
+  // Apply sorting, filtering, and pagination
+  let filteredProducts = [...products];
+
+  // Apply sorting
+  if (req.query.sorting) {
+    const sortingField = req.query.sorting;
+    const sortOrder = req.query.order === 'asc' ? 1 : -1;
+    filteredProducts.sort((a, b) => (a[sortingField] - b[sortingField]) * sortOrder);
+  }
+
+  // Apply category filtering
+  if (req.query.categoryQuery) {
+    const category = req.query.categoryQuery;
+    filteredProducts = filteredProducts.filter(product => product.category === category);
+  }
+
+  // Apply price filtering
+  if (req.query.priceQuery) {
+    const [minPrice, maxPrice] = req.query.priceQuery.split('-').map(Number);
+    filteredProducts = filteredProducts.filter(product => product.price >= minPrice && product.price <= maxPrice);
+  }
+
+  // Apply color filtering
+  if (req.query.colorQuery) {
+    const color = req.query.colorQuery;
+    filteredProducts = filteredProducts.filter(product => product.color.includes(color));
+  }
+
+  // Apply discount filtering
+  if (req.query.discountQuery) {
+    filteredProducts = filteredProducts.filter(product => product.discount > 0);
+  }
+
+  const totalCount = filteredProducts.length;
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
+  res.setHeader("X-Total-Count", totalCount);
 
   res.status(200).json(paginatedProducts);
 };
+
 
 exports.getproduct = (req, res) => {
   const productId = parseInt(req.params.id);
